@@ -56,7 +56,7 @@ export class AgenticOmsCdkStack extends cdk.Stack {
 
     // Upload local scripts (Glue script and generator assets) to S3
     new s3deploy.BucketDeployment(this, 'DeployScripts', {
-      sources: [s3deploy.Source.asset(path.join(__dirname, '../assets'))],
+      sources: [s3deploy.Source.asset(path.join(__dirname, '../src'))],
       destinationBucket: dataBucket,
       memoryLimit: 512
     });
