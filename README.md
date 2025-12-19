@@ -12,3 +12,13 @@ AWS CDK v2 installed (npm install -g aws-cdk)
 Python 3.8+ and pip
 
 aws-cdk-lib project will be TypeScript
+# 1. CDK Project (TypeScript)
+## Create a new CDK app and stack. Steps:
+```Shell
+mkdir agentic-oms-cdk
+cd agentic-oms-cdk
+cdk init app --language typescript
+npm install aws-cdk-lib constructs @aws-cdk/aws-s3-deployment
+# (cdk v2 includes modules in aws-cdk-lib)
+```
+
