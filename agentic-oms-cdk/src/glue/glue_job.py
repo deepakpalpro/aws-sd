@@ -24,18 +24,18 @@ df = spark.read.json(source_path)
 
 # Assuming structure: event.order is an object
 orders_df = df.select(
-    col("event.eventId").alias("eventId"),
-    col("event.eventTime").alias("eventTime"),
-    col("event.eventType").alias("eventType"),
-    col("event.order.orderId").alias("orderId"),
-    col("event.order.customerId").alias("customerId"),
-    col("event.order.createdAt").alias("createdAt"),
-    col("event.order.totalAmount").alias("totalAmount"),
-    col("event.order.currency").alias("currency"),
-    col("event.order.status").alias("status"),
-    col("event.order.fulfilmentWarehouse").alias("fulfilmentWarehouse"),
-    col("event.order.payment").alias("payment"),
-    col("event.order.items").alias("items")
+    col("eventId").alias("eventId"),
+    col("eventTime").alias("eventTime"),
+    col("eventType").alias("eventType"),
+    col("order.orderId").alias("orderId"),
+    col("order.customerId").alias("customerId"),
+    col("order.createdAt").alias("createdAt"),
+    col("order.totalAmount").alias("totalAmount"),
+    col("order.currency").alias("currency"),
+    col("order.status").alias("status"),
+    col("order.fulfilmentWarehouse").alias("fulfilmentWarehouse"),
+    col("order.payment").alias("payment"),
+    col("order.items").alias("items")
 )
 
 # Explode items so each row is order + item

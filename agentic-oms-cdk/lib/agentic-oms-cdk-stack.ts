@@ -20,7 +20,7 @@ export class AgenticOmsCdkStack extends cdk.Stack {
     });
 
     // DynamoDB table for Orders
-    const ordersTable = new dynamodb.Table(this, 'OrdersTable', {
+    const ordersTable = new dynamodb.Table(this, 'OmsOrdersTable', {
       partitionKey: { name: 'orderId', type: dynamodb.AttributeType.STRING },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       removalPolicy: cdk.RemovalPolicy.DESTROY
@@ -47,7 +47,7 @@ export class AgenticOmsCdkStack extends cdk.Stack {
     stream.grantRead(glueRole);
 
     // Create a Glue database
-    const glueDb = new glue.CfnDatabase(this, 'GlueDatabase', {
+    const glueDb = new glue.CfnDatabase(this, 'OmsGlueDatabase', {
       catalogId: this.account,
       databaseInput: {
         name: 'agentic_oms_db'
@@ -62,7 +62,7 @@ export class AgenticOmsCdkStack extends cdk.Stack {
     });
 
     // Glue job definition (CfnJob). We'll reference the script uploaded to S3 path: assets/glue_job.py
-    const glueJob = new glue.CfnJob(this, 'GlueJob', {
+    const glueJob = new glue.CfnJob(this, 'OmsGlueJob', {
       name: 'agentic-oms-glue-etl',
       role: glueRole.roleArn,
       command: {

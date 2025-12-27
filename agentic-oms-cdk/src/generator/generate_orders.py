@@ -13,8 +13,17 @@ import boto3, json, time, uuid, random
 from datetime import datetime, timezone, timedelta
 from faker import Faker
 import argparse
+from decimal import Decimal
+import json
+
 
 fake = Faker()
+
+def float_to_decimal(value):
+    if isinstance(value, float):
+        # Convert float to string first to avoid precision issues
+        return Decimal(str(value))
+    return value
 
 def iso_now():
     return datetime.now(timezone.utc).isoformat()
@@ -51,10 +60,14 @@ def main(region, bucket, table, stream, count=100, sleep=0.01):
     dynamo = boto3.resource('dynamodb', region_name=region).Table(table)
     kinesis = boto3.client('kinesis', region_name=region)
 
+
+
     for i in range(count):
         order = make_order()
+        dynamo_item = json.loads(json.dumps(order), parse_float=Decimal)
+
         # Put item in DynamoDB
-        dynamo.put_item(Item=order)
+        dynamo.put_item(Item=dynamo_item)
         # Create an event for the order (simple)
         event = {
             "eventId": str(uuid.uuid4()),
@@ -63,12 +76,13 @@ def main(region, bucket, table, stream, count=100, sleep=0.01):
             "order": order
         }
         # push to Kinesis
-        kinesis.put_record(
+        response = kinesis.put_record(
             StreamName=stream,
             Data=json.dumps(event),
             PartitionKey=order['orderId']
         )
-        # write raw event to S3 as newline-delimited json (one file per order)
+        #print(f"Record put to shard :{ response['ShardId'] } at sequence number: { response['SequenceNumber'] }")
+        # write raw event to S3 as newline-delimitebsed json (one file per order)
         key = f"raw/events/{order['orderId']}.json"
         s3.put_object(Bucket=bucket, Key=key, Body=json.dumps(event).encode('utf-8'))
         if (i+1) % 10 == 0:
@@ -77,7 +91,7 @@ def main(region, bucket, table, stream, count=100, sleep=0.01):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--region', default='ap-southeast-2')
+    parser.add_argument('--region', default='us-east-1')
     parser.add_argument('--bucket', required=True)
     parser.add_argument('--table', default='Orders')
     parser.add_argument('--stream', default='oms-events-stream')
