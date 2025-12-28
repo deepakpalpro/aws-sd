@@ -6,7 +6,9 @@ const config: Config = {
 
   // Node runtime (Lambda compatible)
   testEnvironment: 'node',
-
+  
+  setupFiles: ['<rootDir>/test/jest.env.ts'],
+  
   // Where Jest looks for tests
   roots: ['<rootDir>/services'],
 
