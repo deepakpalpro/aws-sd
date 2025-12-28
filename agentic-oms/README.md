@@ -13,3 +13,17 @@ The `cdk.json` file tells the CDK Toolkit how to execute your app.
 * `cdk deploy`      deploy this stack to your default AWS account/region
 * `cdk diff`        compare deployed stack with current state
 * `cdk synth`       emits the synthesized CloudFormation template
+
+  ## Post-Deployment Validation (Functional)
+  ```bash
+  curl -X POST <API_URL> \
+  -H "Content-Type: application/json" \
+  -d '{
+    "orderId": "ORD-1001",
+    "eventType": "PAYMENT_FAILED",
+    "timestamp": "2025-01-01T10:00:00Z",
+    "source": "checkout",
+    "payload": { "reason": "INSUFFICIENT_FUNDS" },
+    "correlationId": "corr-001"
+  }'
+```
