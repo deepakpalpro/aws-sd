@@ -1,19 +1,33 @@
-import { Duration, Stack, StackProps } from 'aws-cdk-lib/core';
-import * as sns from 'aws-cdk-lib/aws-sns';
-import * as subs from 'aws-cdk-lib/aws-sns-subscriptions';
-import * as sqs from 'aws-cdk-lib/aws-sqs';
-import { Construct } from 'constructs';
+import * as cdk from "aws-cdk-lib";
+import * as lambda from "aws-cdk-lib/aws-lambda";
+import * as apigw from "aws-cdk-lib/aws-apigateway";
+import * as events from "aws-cdk-lib/aws-events";
+import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 
 export class AgenticOmsStack extends Stack {
-  constructor(scope: Construct, id: string, props?: StackProps) {
-    super(scope, id, props);
+  constructor(scope: cdk.App, id: string) {
+    super(scope, id);
 
-    const queue = new sqs.Queue(this, 'AgenticOmsQueue', {
-      visibilityTimeout: Duration.seconds(300)
+    const table = new dynamodb.Table(this, "OrderEvents", {
+      partitionKey: { name: "orderId", type: dynamodb.AttributeType.STRING },
+      sortKey: { name: "timestamp", type: dynamodb.AttributeType.STRING }
     });
 
-    const topic = new sns.Topic(this, 'AgenticOmsTopic');
+    const fn = new lambda.Function(this, "OrderEventHandler", {
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: "handler.main",
+      code: lambda.Code.fromAsset("services/order-event-processor"),
+      environment: {
+        TABLE_NAME: table.tableName
+      }
+    });
 
-    topic.addSubscription(new subs.SqsSubscription(queue));
+    table.grantWriteData(fn);
+
+    const api = new apigw.LambdaRestApi(this, "OrderEventAPI", {
+      handler: fn
+    });
+
+    new events.EventBus(this, "OrderEventBus");
   }
 }
