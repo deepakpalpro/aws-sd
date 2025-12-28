@@ -1,6 +1,6 @@
 import { OrderEvent } from "./schema";
 import { putMetric } from "./metrics";
-import { DynamoDB } from "aws-sdk";
+import * as DynamoDB from "aws-sdk/clients/dynamodb";
 
 const db = new DynamoDB.DocumentClient();
 const TABLE = process.env.TABLE_NAME!;
