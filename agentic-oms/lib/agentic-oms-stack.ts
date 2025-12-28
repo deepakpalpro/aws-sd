@@ -1,12 +1,13 @@
-import * as cdk from "aws-cdk-lib";
+import * as cdk from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as apigw from "aws-cdk-lib/aws-apigateway";
 import * as events from "aws-cdk-lib/aws-events";
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 
-export class AgenticOmsStack extends Stack {
-  constructor(scope: cdk.App, id: string) {
-    super(scope, id);
+export class AgenticOmsStack extends cdk.Stack {
+  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
 
     const table = new dynamodb.Table(this, "OrderEvents", {
       partitionKey: { name: "orderId", type: dynamodb.AttributeType.STRING },
