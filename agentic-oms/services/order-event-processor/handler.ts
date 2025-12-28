@@ -3,13 +3,14 @@ import { putMetric } from "./metrics";
 import * as DynamoDB from "aws-sdk/clients/dynamodb";
 
 const db = new DynamoDB.DocumentClient();
-const TABLE = process.env.TABLE_NAME!;
+
+const getConfig=() =>({ tableName: process.env.ORDER_TABLE_NAME||'' });
 
 export async function main(event: any) {
   const body: OrderEvent = JSON.parse(event.body);
-
+  const {tableName}=getConfig();
   await db.put({
-    TableName: TABLE,
+    TableName: tableName,
     Item: body
   }).promise();
 
